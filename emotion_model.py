@@ -18,11 +18,30 @@ def extract_features(file_path):
 
     audio, sample_rate = librosa.load(file_path, duration=3, offset=0.5)
 
-    mfcc = np.mean(librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40).T, axis=0)
+    mfcc = np.mean(
+        librosa.feature.mfcc(
+            y=audio,
+            sr=sample_rate,
+            n_mfcc=40
+        ).T,
+        axis=0
+    )
 
-    chroma = np.mean(librosa.feature.chroma_stft(y=audio, sr=sample_rate).T, axis=0)
+    chroma = np.mean(
+        librosa.feature.chroma_stft(
+            y=audio,
+            sr=sample_rate
+        ).T,
+        axis=0
+    )
 
-    mel = np.mean(librosa.feature.melspectrogram(y=audio, sr=sample_rate).T, axis=0)
+    mel = np.mean(
+        librosa.feature.melspectrogram(
+            y=audio,
+            sr=sample_rate
+        ).T,
+        axis=0
+    )
 
     feature = np.hstack((mfcc, chroma, mel))
 
@@ -64,6 +83,7 @@ y = np.array(labels)
 # Normalize Features
 # -----------------------------
 scaler = StandardScaler()
+
 X = scaler.fit_transform(X)
 
 
@@ -83,7 +103,10 @@ emotion_labels = encoder.classes_
 # Train Test Split
 # -----------------------------
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X,
+    y,
+    test_size=0.2,
+    random_state=42
 )
 
 
@@ -91,6 +114,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 # Reshape for LSTM
 # -----------------------------
 X_train = np.expand_dims(X_train, axis=1)
+
 X_test = np.expand_dims(X_test, axis=1)
 
 
@@ -99,10 +123,18 @@ X_test = np.expand_dims(X_test, axis=1)
 # -----------------------------
 model = Sequential()
 
-model.add(LSTM(256, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
+model.add(
+    LSTM(
+        256,
+        return_sequences=True,
+        input_shape=(X_train.shape[1], X_train.shape[2])
+    )
+)
+
 model.add(Dropout(0.3))
 
 model.add(LSTM(128))
+
 model.add(Dropout(0.3))
 
 model.add(Dense(64, activation='relu'))
@@ -151,13 +183,36 @@ print("\nModel Accuracy:", accuracy)
 # -----------------------------
 def predict_emotion(audio_path):
 
-    audio, sample_rate = librosa.load(audio_path, duration=3, offset=0.5)
+    audio, sample_rate = librosa.load(
+        audio_path,
+        duration=3,
+        offset=0.5
+    )
 
-    mfcc = np.mean(librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=40).T, axis=0)
+    mfcc = np.mean(
+        librosa.feature.mfcc(
+            y=audio,
+            sr=sample_rate,
+            n_mfcc=40
+        ).T,
+        axis=0
+    )
 
-    chroma = np.mean(librosa.feature.chroma_stft(y=audio, sr=sample_rate).T, axis=0)
+    chroma = np.mean(
+        librosa.feature.chroma_stft(
+            y=audio,
+            sr=sample_rate
+        ).T,
+        axis=0
+    )
 
-    mel = np.mean(librosa.feature.melspectrogram(y=audio, sr=sample_rate).T, axis=0)
+    mel = np.mean(
+        librosa.feature.melspectrogram(
+            y=audio,
+            sr=sample_rate
+        ).T,
+        axis=0
+    )
 
     feature = np.hstack((mfcc, chroma, mel))
 
@@ -180,7 +235,10 @@ def predict_emotion(audio_path):
         "08": "Surprised"
     }
 
-    emotion = emotion_dict.get(emotion_labels[predicted_index], "Unknown")
+    emotion = emotion_dict.get(
+        emotion_labels[predicted_index],
+        "Unknown"
+    )
 
     print("\nPredicted Emotion:", emotion)
 
